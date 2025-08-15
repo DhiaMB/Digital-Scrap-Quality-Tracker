@@ -1,23 +1,24 @@
 import streamlit as st
-import scrap_analysis_page, quality_reports_page
 import pandas as pd
+
+import upload_data_page          # <-- your upload page
+import scrap_analysis_page
+import quality_reports_page
 
 st.set_page_config(page_title="Digital Scrap & Quality Tracker", layout="wide")
 
-# --- File upload (shared for all pages) ---
-if "df" not in st.session_state:
-    st.session_state.df = None
+# ---- Navigation ----
+page = st.sidebar.radio(
+    "Navigate",
+    ["Upload Data", "Scrap Analysis", "Quality Reports"]
+)
 
-uploaded_file = st.sidebar.file_uploader("Upload CSV", type="csv")
-if uploaded_file:
-    st.session_state.df = pd.read_csv(uploaded_file)
-    st.sidebar.success("File uploaded!")
+# ---- Page selection ----
+if page == "Upload Data":
+    upload_data_page.show_upload_data_page()
 
-# --- Navigation ---
-page = st.sidebar.radio("Navigate", ["Scrap Analysis", "Quality Reports"])
-
-# --- Run selected page ---
-if page == "Scrap Analysis":
+elif page == "Scrap Analysis":
     scrap_analysis_page.show_scrap_analysis_page()
+
 elif page == "Quality Reports":
     quality_reports_page.show_quality_reports_page()
