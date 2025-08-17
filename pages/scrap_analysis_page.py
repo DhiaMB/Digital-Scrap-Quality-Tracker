@@ -60,6 +60,7 @@ def show_scrap_analysis_page():
     # ---- KPI TAB ----
     with tab_kpi:
         st.subheader("Key Performance Indicators")
+        st.write("Overall scrap KPIs for the selected date range and filters.")
         total_scrap = df_filtered["Quantity_Scrapped_meters"].sum()
         total_cost = df_filtered["Scrap_Cost"].sum()
         top_defect = df_filtered["Defect_Type"].mode()[0] if not df_filtered.empty else "-"
@@ -73,6 +74,8 @@ def show_scrap_analysis_page():
     # ---- Trend & Cost TAB ----
     with tab_trend:
         st.subheader("Scrap Trend Over Time({time_granularity})")
+        st.write("Explore how scrap quantity evolves over time and across machines/defects.")
+
         trend_fig = px.line(
             df_filtered.groupby("Date", as_index=False)["Quantity_Scrapped_meters"].sum(),
             x="Date", y="Quantity_Scrapped_meters", markers=True
@@ -89,17 +92,13 @@ def show_scrap_analysis_page():
         fig_defect_trend = px.area(defect_trend, x="Date", y="Quantity_Scrapped_meters", color="Defect_Type")
         st.plotly_chart(fig_defect_trend, use_container_width=True)
 
-        st.subheader("Scrap Cost by Fabric")
-        cost_fig = px.treemap(
-            df_filtered.groupby("Fabric_Type", as_index=False)["Scrap_Cost"].sum(),
-            path=["Fabric_Type"], values="Scrap_Cost",
-            color="Scrap_Cost", color_continuous_scale="Blues"
-        )
-        st.plotly_chart(cost_fig, use_container_width=True)
+
 
     # ---- Breakdown TAB ----
     with tab_breakdown:
         st.subheader("Top 5 Machines with Most Scrap")
+        st.write("Identify the major contributors to scrap quantity.")
+
         top_machines = (
             df_filtered.groupby("Machine_ID")["Quantity_Scrapped_meters"]
             .sum()

@@ -1,0 +1,18 @@
+# Ignore progress tracker file
+progress_tracker.txt
+
+# Ignore Python virtual environments
+.venv/
+dsqtenv/
+
+# Ignore Python bytecode cache
+__pycache__/
+*.pyc
+
+# Ignore data directories / uploaded files
+data/
+uploaded_files/
+
+# Ignore system files (optional, useful on Windows)
+Thumbs.db
+.DS_Store

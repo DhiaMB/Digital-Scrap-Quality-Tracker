@@ -1,32 +1,37 @@
 import streamlit as st
 import pandas as pd
+import os
+
+UPLOAD_DIR = "uploaded_files"
+os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 def show_upload_data_page():
-    st.title("📂 Upload Data & Select Columns")
+    st.title("📂 Upload Data")
 
-    # File upload
-    uploaded_file = st.file_uploader("Upload CSV file", type="csv")
-    if uploaded_file is not None:
-        df = pd.read_csv(uploaded_file)
-        st.session_state.df = df.copy()  # Save in session state to use in other pages
+    # --- File uploader ---
+    uploaded_file = st.file_uploader("Upload CSV", type="csv")
+    file_to_load = None
 
-        st.success("File uploaded successfully!")
+    if uploaded_file:
+        # Save the uploaded file locally
+        file_path = os.path.join(UPLOAD_DIR, uploaded_file.name)
+        with open(file_path, "wb") as f:
+            f.write(uploaded_file.getbuffer())
+        st.success(f"File saved locally: {uploaded_file.name}")
+        file_to_load = file_path
 
-        # --- Column Selection ---
-        st.subheader("Select Columns to Display")
-        if "selected_columns" not in st.session_state:
-            # Default: all columns selected
-            st.session_state.selected_columns = df.columns.tolist()
+    # --- Previously uploaded files ---
+    st.sidebar.subheader("📄 Previously Uploaded Files")
+    uploaded_files = os.listdir(UPLOAD_DIR)
+    if uploaded_files:
+        selected_file = st.sidebar.selectbox("Select a file to load", uploaded_files)
+        if selected_file:
+            file_to_load = os.path.join(UPLOAD_DIR, selected_file)
 
-        selected_columns = st.multiselect(
-            "Choose columns to display",
-            options=df.columns.tolist(),
-            default=st.session_state.selected_columns
-        )
-        st.session_state.selected_columns = selected_columns  # Save choice
-
-        # Show filtered DataFrame
-        st.subheader(f"Preview of Selected Columns ({len(df)} rows)")
-        st.dataframe(df[selected_columns])
+    # --- Load and display only once ---
+    if file_to_load:
+        st.session_state.df = pd.read_csv(file_to_load)
+        st.subheader(f"📊 Loaded Data: {os.path.basename(file_to_load)}")
+        st.dataframe(st.session_state.df)
     else:
-        st.info("Please upload a CSV file to get started.")
+        st.info("Upload a CSV file to get started.")
