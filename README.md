@@ -22,6 +22,5 @@ Built as part of a data engineering & analytics learning project, with the goal 
 - [Plotly Express](https://plotly.com/python/plotly-express/) – interactive charts  
 - Python (3.9+)  
 
----
 
-## 📂 Project Structure
+
